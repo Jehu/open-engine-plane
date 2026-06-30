@@ -1,4 +1,4 @@
-# Open Engine Plane
+# Open Engine for Plane
 
 Open Engine is an operating model for coordinating AI agents through a shared work queue instead of relying on one long chat thread. Work is written down as explicit tasks, routed to a named agent/runtime, processed in small auditable steps, and handed back with receipts that humans and other agents can inspect later.
 
