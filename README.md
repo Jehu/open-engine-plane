@@ -1,12 +1,19 @@
 # Open Engine Plane
 
-Unified skill package for operating Open Engine on top of Plane.
+Open Engine is an operating model for coordinating AI agents through a shared work queue instead of relying on one long chat thread. Work is written down as explicit tasks, routed to a named agent/runtime, processed in small auditable steps, and handed back with receipts that humans and other agents can inspect later.
+
+The core idea is simple:
+
+1. **Humans or agents create work items** in a shared system of record.
+2. **Triage turns rough requests into agent-ready tasks** with outcome, sources, acceptance criteria, boundaries, blocker rules, and handoff instructions.
+3. **A target runtime claims exactly one ready task**, does only the scoped work, and leaves a clear receipt.
+4. **Humans stay in control** through review states, visible blockers, labels, and explicit approval gates.
+
+This repository implements that model on top of **Plane**. Plane provides the shared operating surface: Backlog, task states, labels, comments, routing map, status ledger, and human review. The scripts and skills in this repo define how agents should prepare, claim, process, block, review, and complete that work without guessing hidden context.
 
 ## Attribution
 
-The **Open Engine** operating idea is credited to **[Nate B. Jones](https://substack.com/@natesnewsletter)**. His Substack article **["AI Agent Handoffs"](https://natesnewsletter.substack.com/p/ai-agent-handoffs)** explains the handoff model that inspired this package.
-
-This repository is an implementation-oriented Plane skill package built around that idea.
+The **Open Engine** operating idea is credited to **[Nate B. Jones](https://substack.com/@natesnewsletter)**. His Substack article **["AI Agent Handoffs"](https://natesnewsletter.substack.com/p/ai-agent-handoffs)** explains the handoff model that inspired this package. This README summarizes the practical idea so the repository is understandable even without access to the article.
 
 This repository contains the two companion skills that together cover the full Open Engine Plane workflow:
 
