@@ -2,6 +2,12 @@
 
 Unified skill package for operating Open Engine on top of Plane.
 
+## Attribution
+
+The **Open Engine** operating idea is credited to **[Nate B. Jones](https://substack.com/)**. His Substack article **["AI Agent Handoffs"](https://natesnewsletter.substack.com/p/ai-agent-handoffs)** explains the handoff model that inspired this package.
+
+This repository is an implementation-oriented Plane skill package built around that idea.
+
 This repository contains the two companion skills that together cover the full Open Engine Plane workflow:
 
 - **`oe-plane-triage`** prepares Backlog issues for agent execution.
