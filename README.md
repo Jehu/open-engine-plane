@@ -35,6 +35,7 @@ open-engine-plane/
 │           ├── backlog-triage-policy.md
 │           └── task-writing-guide.md
 ├── scripts/
+│   ├── bootstrap_workspace.sh
 │   └── validate.sh
 └── docs/
     └── operating-model.md
@@ -84,6 +85,23 @@ For actual Plane mutations, runtimes need access to Plane through one of:
 - a runtime-specific adapter or MCP tool.
 
 The triage skill describes the decision policy; the runner skill contains the portable shell helpers currently used for deterministic Plane operations.
+
+## Bootstrap a Plane workspace
+
+Use `scripts/bootstrap_workspace.sh` to prepare an existing empty Plane workspace for Open Engine. The script creates or reuses the `Open Engine` project, required Agent states, labels, standing work items, routing map, core context, and an optional smoke-test item.
+
+```bash
+# Preview without Plane API writes or secrets
+./scripts/bootstrap_workspace.sh --dry-run
+
+# Real setup using environment variables
+PLANE_SECRETS_FILE=/path/to/plane.env ./scripts/bootstrap_workspace.sh
+
+# Custom routes
+OPEN_ENGINE_ROUTES="local-a0-default,vps-hermes-scheduler" ./scripts/bootstrap_workspace.sh --no-smoke
+```
+
+The script never prints token values. Do not commit `.env`, `secrets.env`, API tokens, or private keys.
 
 ## Validate
 

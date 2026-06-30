@@ -19,4 +19,5 @@ for path in "${required[@]}"; do
 done
 bash -n skills/oe-plane-runner/scripts/plane_queue_helper.sh
 bash -n skills/oe-plane-runner/scripts/run_one_queue_check.sh
+bash -n scripts/bootstrap_workspace.sh
 echo "ok"
