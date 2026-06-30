@@ -9,7 +9,7 @@ The core idea is simple:
 3. **A target runtime claims exactly one ready task**, does only the scoped work, and leaves a clear receipt.
 4. **Humans stay in control** through review states, visible blockers, labels, and explicit approval gates.
 
-This repository implements that model on top of **Plane**. Plane provides the shared operating surface: Backlog, task states, labels, comments, routing map, status ledger, and human review. The scripts and skills in this repo define how agents should prepare, claim, process, block, review, and complete that work without guessing hidden context.
+This repository implements that model on top of **[Plane](https://plane.so)**. Plane provides the shared operating surface: Backlog, task states, labels, comments, routing map, status ledger, and human review. The scripts and skills in this repo define how agents should prepare, claim, process, block, review, and complete that work without guessing hidden context.
 
 ## Attribution
 
