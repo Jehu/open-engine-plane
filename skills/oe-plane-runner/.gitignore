@@ -1,0 +1,10 @@
+# local secrets and runtime state
+.env
+*.env
+secrets.env
+.a0proj/
+
+# logs/temp
+*.log
+*.tmp
+.DS_Store
