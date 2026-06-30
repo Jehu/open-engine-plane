@@ -1,5 +1,5 @@
 ---
-name: open-engine-plane-runner
+name: oe-plane-runner
 description: Run exactly one Open Engine queue check in Plane for a production runtime using the deterministic runner/helper. Use for Plane-based agent handoffs, runtime status ledger updates, status transitions, and AGENT receipt comments.
 triggers:
   - "run open engine queue"

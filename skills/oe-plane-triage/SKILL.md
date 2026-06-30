@@ -1,5 +1,5 @@
 ---
-name: open-engine-task-triage
+name: oe-plane-triage
 description: Improve manually created Open Engine Backlog issues into agent-ready tasks without guessing the target agent code. Use for triage agents such as Hermes, Agent Zero, Claude Code, or any runtime that prepares Plane issues for Open Engine execution.
 triggers:
   - "triage Open Engine backlog"
@@ -99,7 +99,7 @@ Use the bundled Open Engine task-writing guide:
 
 - `references/task-writing-guide.md`
 
-The triage skill must remain self-contained so Hermes, Agent Zero, Claude Code, or another runtime can install it without also installing `open-engine-plane-runner`.
+The triage skill must remain self-contained so Hermes, Agent Zero, Claude Code, or another runtime can install it without also installing `oe-plane-runner`.
 
 Every refined agent task should include, or explicitly mark as not needed:
 

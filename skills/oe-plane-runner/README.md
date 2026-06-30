@@ -7,7 +7,7 @@ This repository contains the installable skill body, deterministic helper script
 ## Contents
 
 ```text
-open-engine-plane-runner/
+oe-plane-runner/
 ├── SKILL.md
 ├── scripts/
 │   ├── plane_queue_helper.sh
@@ -148,7 +148,7 @@ Marco Michely
 Verify that Hermes can clone this skill repository, load Plane credentials, and run one queue check.
 
 ## Sources
-- https://github.com/Jehu/open-engine-plane-runner
+- https://github.com/Jehu/oe-plane-runner
 - /opt/data/.env on the Hermes host
 
 ## Acceptance criteria
@@ -228,16 +228,16 @@ Other terminal paths:
 ./scripts/plane_queue_helper.sh fail local-a0-developer 123 'Unrecoverable failure details.'
 ```
 
-## Related Skill: open-engine-task-triage
+## Related Skill: oe-plane-triage
 
-[`open-engine-task-triage`](https://github.com/Jehu/open-engine-task-triage) is the companion intake/refinement skill for Open Engine Backlog issues. It teaches a triage agent how to improve manually created issues into agent-ready tasks without executing the underlying work and without guessing the target agent code.
+[`oe-plane-triage`](https://github.com/Jehu/oe-plane-triage) is the companion intake/refinement skill for Open Engine Backlog issues. It teaches a triage agent how to improve manually created issues into agent-ready tasks without executing the underlying work and without guessing the target agent code.
 
-Use `open-engine-task-triage` when a Backlog item needs clearer requester, desired outcome, sources, acceptance criteria, boundaries, blocker rule, output handoff, or visible human-review handling. Use `open-engine-plane-runner` after the issue is fully specified, has a valid canonical title, and is ready for a target runtime to process through the Plane queue.
+Use `oe-plane-triage` when a Backlog item needs clearer requester, desired outcome, sources, acceptance criteria, boundaries, blocker rule, output handoff, or visible human-review handling. Use `oe-plane-runner` after the issue is fully specified, has a valid canonical title, and is ready for a target runtime to process through the Plane queue.
 
 In short:
 
-- `open-engine-task-triage` prepares Backlog issues for execution.
-- `open-engine-plane-runner` executes ready Plane tasks one item per run.
+- `oe-plane-triage` prepares Backlog issues for execution.
+- `oe-plane-runner` executes ready Plane tasks one item per run.
 
 ## Standing Skill example
 

@@ -1,6 +1,6 @@
 # Plane API Contract for Open Engine
 
-Use this reference after loading `open-engine-plane-runner` and before making Plane API changes.
+Use this reference after loading `oe-plane-runner` and before making Plane API changes.
 
 ## Authentication
 

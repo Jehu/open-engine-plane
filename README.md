@@ -89,14 +89,9 @@ From the repository root:
 
 The validation script performs static checks only. Plane API operations still require environment configuration.
 
-## Related repositories
+## Package status
 
-This repository supersedes the earlier split package approach:
-
-- https://github.com/Jehu/open-engine-plane-runner
-- https://github.com/Jehu/open-engine-task-triage
-
-Those repositories may remain available as historical mirrors or transition artifacts.
+This repository is the canonical package for Open Engine Plane skills. Runtime and triage capabilities are maintained together here so shared Plane API, routing, state, label, and receipt behavior can evolve consistently.
 
 ## License
 

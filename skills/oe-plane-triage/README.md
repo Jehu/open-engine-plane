@@ -53,14 +53,14 @@ may become:
 - [`references/backlog-triage-policy.md`](./references/backlog-triage-policy.md) — compact decision table and issue template
 - [`references/task-writing-guide.md`](./references/task-writing-guide.md) — bundled agent-ready task writing guide
 
-## Related Skill: open-engine-plane-runner
+## Related Skill: oe-plane-runner
 
-This repository is intentionally separate from [`open-engine-plane-runner`](https://github.com/Jehu/open-engine-plane-runner) and is self-contained for triage use.
+This repository is intentionally separate from [`oe-plane-runner`](https://github.com/Jehu/oe-plane-runner) and is self-contained for triage use.
 
-- [`open-engine-plane-runner`](https://github.com/Jehu/open-engine-plane-runner) is the runtime/execution skill. It provides the deterministic Plane queue runner, helper scripts, route validation, status transitions, and receipt handling for agents that process exactly one eligible work item per run.
-- `open-engine-task-triage` is the intake/refinement skill. It improves Backlog issues before execution, without executing the underlying task and without guessing the target agent code.
+- [`oe-plane-runner`](https://github.com/Jehu/oe-plane-runner) is the runtime/execution skill. It provides the deterministic Plane queue runner, helper scripts, route validation, status transitions, and receipt handling for agents that process exactly one eligible work item per run.
+- `oe-plane-triage` is the intake/refinement skill. It improves Backlog issues before execution, without executing the underlying task and without guessing the target agent code.
 
-Use `open-engine-task-triage` before a work item is ready for `Agent Todo`; use `open-engine-plane-runner` when a target runtime is ready to claim and process a fully specified task.
+Use `oe-plane-triage` before a work item is ready for `Agent Todo`; use `oe-plane-runner` when a target runtime is ready to claim and process a fully specified task.
 
 ## Suggested label policy
 
