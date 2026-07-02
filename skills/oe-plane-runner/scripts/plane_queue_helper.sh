@@ -142,6 +142,30 @@ post_comment() {
   api_post "/api/v1/workspaces/$WS/projects/$PROJ_ID/work-items/$item_id/comments/" "$payload" >/dev/null
 }
 
+assignee_mentions_html() {
+  local item_id="$1"
+  item_detail_json "$item_id" | jq -r '
+    [(.assignees // [])[]
+      | select((.id // "") != "")
+      | "<mention-component id=\"mention-" + .id + "\" entity_name=\"user_mention\" entity_identifier=\"" + .id + "\">@" + ((.first_name // .display_name // .email // "assignee") | tostring | @html) + "</mention-component>"
+    ] | join(" ")'
+}
+
+post_comment_with_assignee_attention() {
+  local item_id="$1" text="$2" action="$3"
+  local html payload mentions action_html
+  html=$(text_to_comment_html "$text")
+  mentions=$(assignee_mentions_html "$item_id")
+  if [ -n "$mentions" ]; then
+    action_html=$(printf '%s' "$action" | jq -Rsr 'gsub("&";"&amp;") | gsub("<";"&lt;") | gsub(">";"&gt;")')
+    html="$html<p><strong>Human attention:</strong> $mentions $action_html</p>"
+  else
+    html="$html<p><strong>Human attention:</strong> No assignee available to mention. Please assign a human operator.</p>"
+  fi
+  payload=$(jq -n --arg h "$html" '{comment_html:$h}')
+  api_post "/api/v1/workspaces/$WS/projects/$PROJ_ID/work-items/$item_id/comments/" "$payload" >/dev/null
+}
+
 patch_comment() {
   local item_id="$1" comment_id="$2" text="$3"
   local html payload
@@ -555,7 +579,7 @@ Result: $message
 Changed: Plane comments and status only.
 Checks: Re-read status verified as Agent Working before completion; final status verified after patch to Agent Review.
 Needs human: review required."
-  post_comment "$id" "$text"
+  post_comment_with_assignee_attention "$id" "$text" "Review required: $message"
   moved=$(move_state "$id" "Agent Review")
   ledger_cmd "$agent" "completed #$seq" "$name — needs human review" >/dev/null
   jq -n --arg ok true --argjson item "$moved" '{ok:true,receipt:"AGENT DONE",review_required:true,item:$item}'
@@ -572,7 +596,7 @@ block_cmd() {
 Agent: $agent
 At: $(iso_now)
 Question: $question"
-  post_comment "$id" "$text"
+  post_comment_with_assignee_attention "$id" "$text" "Input needed: $question"
   ledger_cmd "$agent" "blocked #$seq" "$name" >/dev/null
   jq -n --arg ok true --argjson item "$moved" '{ok:true,receipt:"AGENT BLOCKED",item:$item}'
 }
@@ -589,7 +613,7 @@ Agent: $agent
 At: $(iso_now)
 Question: $question
 Reason: $reason"
-  post_comment "$id" "$text"
+  post_comment_with_assignee_attention "$id" "$text" "Private human input needed: $question"
   ledger_cmd "$agent" "holding #$seq" "$name" >/dev/null
   jq -n --arg ok true --argjson item "$moved" '{ok:true,receipt:"AGENT HUMAN HOLD",item:$item}'
 }
@@ -683,7 +707,7 @@ fail_cmd() {
 Agent: $agent
 At: $(iso_now)
 Last safe step: $step"
-  post_comment "$id" "$text"
+  post_comment_with_assignee_attention "$id" "$text" "Failure needs review: $step"
   ledger_cmd "$agent" "failed #$seq" "$name" >/dev/null
   item_detail_json "$id" | compact_item | jq -c '{ok:true,receipt:"AGENT FAILED",item:.}'
 }
