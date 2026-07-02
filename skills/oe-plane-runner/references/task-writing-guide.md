@@ -1,9 +1,9 @@
 # Agent-Ready Task Writing Guide
 
 Skill name: agent-ready-task-writing-guide
-Version: 1.0
+Version: 1.1
 Specification: https://agentskills.io/specification
-Last updated: 2026-06-29
+Last updated: 2026-07-02
 
 ## What this skill teaches
 
@@ -38,7 +38,7 @@ Required skill identity:
 
 After local installation or adaptation, the runtime should post `AGENT APPLIED` on the corresponding Standing Skill issue.
 
-## The 7-part task record
+## The 8-part task record
 
 Every agent-ready task should contain these parts. If a part is not needed, say so explicitly.
 
@@ -49,14 +49,32 @@ Who is asking, and who has authority to approve changes.
 **Good:** `Marco Michely — operator of local-a0-developer`
 **Bad:** `me`
 
-### 2. Desired outcome
+### 2. Target context
+
+What product, customer, repository, website, system, or work context the task belongs to. This is task context, not route metadata. Do not duplicate the agent code here; routing stays in the issue title, assignee, label, and status.
+
+Use stable, agent-neutral identifiers that any runtime can map locally if needed. Local workspace paths are runtime-private hints and should not be the primary source of truth in the shared issue.
+
+**Good:**
+```
+Project: ki-beratung-michely-website
+Type: website
+Primary source: https://github.com/Jehu/ki-beratung-michely
+Domain: ki-beratung-michely.de
+```
+**Good when not needed:** `No separate target context; this task is about the Open Engine queue itself.`
+**Bad:** `/a0/usr/projects/ki-beratung-michely-website` as the only target, or a YAML `route.agent_code` block that can become stale during handoff.
+
+Agents should use their private/runtime context to map the target project to a local workspace. If a target context exists but the runtime cannot identify a safe workspace and artifact location matters, leave `AGENT BLOCKED` with one specific question instead of silently writing artifacts into the engine/orchestrator project.
+
+### 3. Desired outcome
 
 The concrete, observable result that should exist when the task is done.
 
 **Good:** `Add a rollback section to the plugin installer docs at /a0/usr/workdir/a0-plugins/README.md`
 **Bad:** `improve the docs`
 
-### 3. Sources
+### 4. Sources
 
 Which files, links, issues, docs, or APIs are authoritative for this task.
 
@@ -68,7 +86,7 @@ Which files, links, issues, docs, or APIs are authoritative for this task.
 ```
 **Bad:** `the usual files`
 
-### 4. Acceptance criteria
+### 5. Acceptance criteria
 
 Observable, checkable conditions that prove the task is done.
 
@@ -81,7 +99,7 @@ Observable, checkable conditions that prove the task is done.
 ```
 **Bad:** `looks good`
 
-### 5. Boundaries
+### 6. Boundaries
 
 What the agent may do freely, what needs approval, and what is out of scope.
 
@@ -93,14 +111,14 @@ Out of scope: change installer code, modify other files
 ```
 **Bad:** (nothing — agent guesses what is allowed)
 
-### 6. Blocker rule
+### 7. Blocker rule
 
 What the agent should do when information is missing.
 
 **Good:** `If the rollback pattern is unclear, leave AGENT BLOCKED with one specific question on this issue.`
 **Bad:** (nothing — agent either guesses or stops silently)
 
-### 7. Output handoff
+### 8. Output handoff
 
 Where the result should go: a comment, a file, a PR, a status update.
 
@@ -139,6 +157,11 @@ Title: [agent instructions][local-a0-developer][task] Fix session timeout error 
 
 Requester: Marco Michely
 
+Target context:
+Project: example-auth-service
+Type: repository
+Primary source: src/auth/login.html and src/auth/session.py
+
 Desired outcome:
 The login page at src/auth/login.html no longer shows "Session timeout" when a user
 logs in within 30 seconds of page load.
@@ -171,7 +194,9 @@ Comment on this issue with the root cause, the fix, changed files, and test resu
 Before creating an agent task, check:
 
 - [ ] Title follows `[agent instructions][<agent-code>][task] <outcome>`
+- [ ] Target context is present or explicitly not needed
 - [ ] Desired outcome is concrete and observable
+- [ ] Target labels such as `target:<slug>` or `context:<type>` are applied when useful for filtering
 - [ ] Sources list specific files, links, or issue IDs
 - [ ] Acceptance criteria are checkable (not vibes)
 - [ ] Boundaries say what needs approval
@@ -179,3 +204,16 @@ Before creating an agent task, check:
 - [ ] Output handoff says where the result goes
 
 If any of these are missing, the agent will either guess (risky) or block (slow).
+
+## Target and context labels
+
+Use labels only for coarse filtering and visibility, not for full task details.
+
+Recommended optional labels:
+
+- `target:<slug>` for the concrete product, project, customer site, or system, e.g. `target:ki-beratung-michely-website`
+- `context:<type>` for the kind of work context, e.g. `context:website`, `context:repository`, `context:documentation`, `context:ops`
+
+Keep Open Engine routing native: title pattern, assignee, status, and `agent-instructions` decide queue eligibility. Target/context labels describe what the task is about; they do not replace or duplicate routing.
+
+Do not encode long URLs, local workspace paths, or runtime-specific paths as labels. Put URLs in Sources or Target context. Keep local path mappings in private/runtime context.
