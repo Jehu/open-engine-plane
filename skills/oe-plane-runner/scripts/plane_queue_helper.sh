@@ -462,8 +462,17 @@ Agent: " + $agent + "
   latest_id=$(printf '%s' "$matching" | jq -r '.[-1].id // empty')
   old_ids=$(printf '%s' "$matching" | jq -r '.[0:-1][]?.id')
   if [ -n "$latest_id" ]; then
-    patch_comment "$ledger_id" "$latest_id" "$text"
-    action="updated"
+    if patch_comment "$ledger_id" "$latest_id" "$text" 2>/tmp/oe_ledger_patch.err; then
+      action="updated"
+    else
+      # Plane may forbid editing comments created by a previous actor/API token.
+      # On actor changes, create a fresh status comment instead of failing the queue run.
+      post_comment "$ledger_id" "$text"
+      latest_id=$(comments_json "$ledger_id" | jq -r --arg agent "$agent" '(.results // .) | map(select((.comment_stripped // "") | startswith("AGENT STATUS")) | select((.comment_stripped // "") | contains("
+Agent: " + $agent + "
+"))) | sort_by(.created_at) | .[-1].id // empty')
+      action="created_after_patch_forbidden"
+    fi
   else
     post_comment "$ledger_id" "$text"
     latest_id=$(comments_json "$ledger_id" | jq -r --arg agent "$agent" '(.results // .) | map(select((.comment_stripped // "") | startswith("AGENT STATUS")) | select((.comment_stripped // "") | contains("
@@ -472,11 +481,21 @@ Agent: " + $agent + "
     action="created"
   fi
   pruned=0
+  local prune_skipped=0
+  comments=$(comments_json "$ledger_id")
+  matching=$(printf '%s' "$comments" | jq -c --arg agent "$agent" '(.results // .) | map(select((.comment_stripped // "") | startswith("AGENT STATUS")) | select((.comment_stripped // "") | contains("
+Agent: " + $agent + "
+"))) | sort_by(.created_at)')
+  old_ids=$(printf '%s' "$matching" | jq -r '.[0:-1][]?.id')
   if [ -n "$old_ids" ]; then
     while IFS= read -r old_id; do
       if [ -n "$old_id" ]; then
-        delete_comment "$ledger_id" "$old_id"
-        pruned=$((pruned + 1))
+        if delete_comment "$ledger_id" "$old_id" 2>/tmp/oe_ledger_delete.err; then
+          pruned=$((pruned + 1))
+        else
+          # Best-effort only: old ledger comments may belong to another Plane actor.
+          prune_skipped=$((prune_skipped + 1))
+        fi
       fi
     done <<EOF_OLD_IDS
 $old_ids
@@ -489,11 +508,11 @@ Agent: " + $agent + "
 "))) | sort_by(.created_at)')
   verify_count=$(printf '%s' "$matching" | jq -r 'length')
   verify_result=$(printf '%s' "$matching" | jq -r '.[-1].comment_stripped // ""' | awk -F': ' '/^Last queue result: / {print substr($0, index($0,$2)); exit}')
-  if [ "$verify_count" != "1" ] || [ "$verify_result" != "$result" ]; then
+  if [ "$verify_count" -lt "1" ] || [ "$verify_result" != "$result" ]; then
     jq -n --arg ok false --arg error "ledger_verification_failed" --arg ledger_id "$ledger_id" --arg agent "$agent" --arg expected "$result" --arg actual "$verify_result" --arg count "$verify_count" '{ok:false,error:$error,ledger_id:$ledger_id,agent:$agent,expected:$expected,actual:$actual,matching_comments:($count|tonumber)}'
     return 5
   fi
-  jq -n --arg ok true --arg ledger_id "$ledger_id" --arg agent "$agent" --arg result "$result" --arg action "$action" --arg comment_id "$latest_id" --argjson pruned "$pruned" '{ok:true,ledger_id:$ledger_id,agent:$agent,result:$result,action:$action,comment_id:$comment_id,pruned_duplicates:$pruned,verified:true}'
+  jq -n --arg ok true --arg ledger_id "$ledger_id" --arg agent "$agent" --arg result "$result" --arg action "$action" --arg comment_id "$latest_id" --argjson pruned "$pruned" --argjson prune_skipped "$prune_skipped" --argjson matching_comments "$verify_count" '{ok:true,ledger_id:$ledger_id,agent:$agent,result:$result,action:$action,comment_id:$comment_id,pruned_duplicates:$pruned,prune_skipped:$prune_skipped,matching_comments:$matching_comments,verified:true}'
 }
 
 create_smoke_cmd() {
